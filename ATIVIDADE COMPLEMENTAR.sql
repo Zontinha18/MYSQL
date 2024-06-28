@@ -1,92 +1,64 @@
-DROP DATABASE Zontinha_Oficina;
+DROP DATABASE IF EXISTS Zontinha_Oficina;
 
 CREATE DATABASE Zontinha_Oficina;
 
 USE Zontinha_Oficina;
 
-
 CREATE TABLE Cliente (
-
-Id INT PRIMARY KEY AUTO_INCREMENT,
-Nome VARCHAR (100) NOT NULL,
-Email VARCHAR (100) NOT NULL
-
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Automovel (
-
-Id INT PRIMARY KEY AUTO_INCREMENT,
-Placa VARCHAR (50) NOT NULL,
-Marca VARCHAR (20) NOT NULL,
-Modelo VARCHAR (20) NOT NULL,
-Ano INT NOT NULL,
-
-ClienteId INT,
-FOREIGN KEY (ClienteId) REFERENCES Cliente(Id)
-
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Placa VARCHAR(50) NOT NULL,
+    Marca VARCHAR(20) NOT NULL,
+    Modelo VARCHAR(20) NOT NULL,
+    Ano INT NOT NULL,
+    ClienteId INT,
+    FOREIGN KEY (ClienteId) REFERENCES Cliente(Id)
 );
 
 CREATE TABLE Servico (
-
-Id INT PRIMARY KEY AUTO_INCREMENT,
-DataAtendimento DATE NOT NULL,
-DescricaoServico TEXT,
-AutomovelId INT,
-FOREIGN KEY (AutomovelId) REFERENCES Automovel(Id)
-
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    DataAtendimento DATE NOT NULL,
+    DescricaoServico TEXT,
+    AutomovelId INT,
+    FOREIGN KEY (AutomovelId) REFERENCES Automovel(Id)
 );
 
--- Tabela Cliente
-INSERT INTO Cliente (nome,Email) VALUES 
-
+-- Inserção de dados na tabela Cliente
+INSERT INTO Cliente (Nome, Email) VALUES 
 ('Mauricio Stalone', 'mauricio@top.com.br'),
-('Matheus toretto', 'matheus@lascou.com.br' ),
+('Matheus Toretto', 'matheus@lascou.com.br'),
 ('Weslen Sampaio', 'weslen@safadao.com.br');
 
--- Tabela Veículos
-INSERT INTO Veiculos (veiculo_id, cliente_id, tipo, marca, modelo, ano) VALUES
+-- Inserção de dados na tabela Automovel
+INSERT INTO Automovel (Placa, Marca, Modelo, Ano, ClienteId) VALUES
+('ABC1234', 'Chevrolet', 'Prisma', 2018, 1),
+('DEF5678', 'Ford', 'EcoSport', 2017, 2),
+('GHI9012', 'Volvo', 'FH 540', 2014, 3);
 
-('Sedan','Mauricio', 'Chevrolet', 'Prisma', '1840' ),
-('SUV','Matheus', 'Ford', 'EcoSport', '1970'),
-('Caminhão','Weslen', 'Volvo', 'FH 540', 2014);
+-- Inserção de dados na tabela Servico
+INSERT INTO Servico (DescricaoServico, DataAtendimento, AutomovelId) VALUES
+('Troca de pistão', '2024-06-15', 1),
+('Reparo de freios', '2024-08-20', 2),
+('Balanceamento e alinhamento', '2024-10-28', 3),
+('Manutenção preventiva', '2024-10-10', 1),
+('Troca de pneus', '2024-02-05', 1);
 
--- Tabela Serviços
-INSERT INTO Servicos (servico_id, veiculo_id, descricao, data, custo) VALUES
-
-('Troca de pistao','Sedan', '2024-06-15', 450.00),
-('Reparo de freios','SUV', '2024-08-20', 950.00),
-('Balanceamento e alinhamento','Caminhão', '2024-10-28', 1000.00),
-('Manutenção preventiva','Sedan', '2024-10-10', 3000.00),
-('Troca de pneus','Sedan' '2024-02-05', 1600.00);
-
-SELECT c.nome AS cliente, COUNT(s.servico_id) AS total_atendimentos
-FROM Clientes c
-
-JOIN Veiculos v ON c.cliente_id = v.cliente_id
-JOIN Servicos s ON v.veiculo_id = s.veiculo_id
-
-GROUP BY c.nome
-ORDER BY total_atendimentos DESC
+-- Consulta para encontrar o cliente com mais atendimentos
+SELECT c.Nome AS Cliente, COUNT(s.Id) AS TotalAtendimentos
+FROM Cliente c
+JOIN Automovel a ON c.Id = a.ClienteId
+JOIN Servico s ON a.Id = s.AutomovelId
+GROUP BY c.Nome
+ORDER BY TotalAtendimentos DESC
 LIMIT 1;
 
-SELECT v.tipo, COUNT(*) AS total_veiculos
-FROM Veiculos v
-
-GROUP BY v.tipo
-ORDER BY total_veiculos DESC;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- Consulta para contar os tipos de veículos
+SELECT a.Marca, COUNT(*) AS TotalVeiculos
+FROM Automovel a
+GROUP BY a.Marca
+ORDER BY TotalVeiculos DESC;
